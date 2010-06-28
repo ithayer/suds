@@ -19,6 +19,7 @@ Contains classes for basic HTTP transport implementations.
 """
 
 import urllib2 as u2
+import httplib
 import base64
 import socket
 from suds.transport import *
@@ -185,3 +186,32 @@ class HttpAuthenticated(HttpTransport):
                  
     def credentials(self):
         return (self.options.username, self.options.password)
+
+
+#HTTPS Client Auth solution for urllib2, inspired by
+# http://bugs.python.org/issue3466
+# and improved by David Norton of Three Pillar Software. In this
+# implementation, we use properties passed in rather than static module
+# fields.
+class HTTPSClientAuthHandler(u2.HTTPSHandler):
+    def __init__(self, key, cert):
+        u2.HTTPSHandler.__init__(self)
+        self.key = key
+        self.cert = cert
+    def https_open(self, req):
+        #Rather than pass in a reference to a connection class, we pass in
+        # a reference to a function which, for all intents and purposes,
+        # will behave as a constructor
+        return self.do_open(self.getConnection, req)
+    def getConnection(self, host, timeout=None):
+        print "Getting connection to : " + host;
+        return httplib.HTTPSConnection(host, timeout=30);
+
+from options import Options
+
+#SUDS Client Auth solution
+class HttpClientAuthTransport(HttpTransport):
+    def __init__(self, key, cert, options = Options()):
+        print "About to init";
+        HttpTransport.__init__(self) # ??
+        self.urlopener = u2.build_opener(HTTPSClientAuthHandler(key, cert))
