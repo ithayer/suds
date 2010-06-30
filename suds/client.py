@@ -38,9 +38,11 @@ from suds.sax.document import Document
 from suds.sax.parser import Parser
 from suds.options import Options
 from suds.properties import Unskin
-from urlparse import urlparse
 from copy import deepcopy
 from logging import getLogger
+
+import urlparse
+
 
 log = getLogger(__name__)
 
@@ -116,6 +118,11 @@ class Client(object):
             sd = ServiceDefinition(self.wsdl, s)
             self.sd.append(sd)
         self.messages = dict(tx=None, rx=None)
+
+    def set_connection_info(self, scheme, host, port):
+        self.scheme = scheme
+        self.host = host
+        self.port = port
         
     def set_options(self, **kwargs):
         """
@@ -693,7 +700,14 @@ class SoapClient:
 
     def location(self):
         p = Unskin(self.options)
-        return p.get('location', self.method.location)
+        parsed = list(urlparse.urlparse(self.method.location))
+        try:
+            parsed[0] = self.client.scheme
+            parsed[1] = self.client.host + ":" + self.client.port
+        except:
+            pass
+        print ":: Using: " + urlparse.urlunparse(parsed)
+        return p.get('location', urlparse.urlunparse(parsed))
     
     def last_sent(self, d=None):
         key = 'tx'

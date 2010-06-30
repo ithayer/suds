@@ -66,6 +66,13 @@ class DocumentReader:
         @return: The specified XML document.
         @rtype: I{Document}
         """
+        if url.startswith("/"):  # If it's a file.
+            print ":: Opening from file: " + url
+            f = open(url, "r")
+            ret = self.readFile(f)
+            f.close()
+            return ret;
+
         id = ObjectId(url, self.suffix)
         cache = self.options.cache
         d = cache.get(id)
@@ -89,6 +96,9 @@ class DocumentReader:
         sax = Parser()
         return sax.parse(file=fp)
 
+    def readFile(self, fp):
+        sax = Parser()
+        return sax.parse(file=fp)
 
 class DefinitionsReader:
     """
@@ -140,3 +150,5 @@ class DefinitionsReader:
             for imp in d.imports:
                 imp.imported.options = self.options
         return d
+
+        
