@@ -23,7 +23,7 @@ from suds.sax.parser import Parser
 from suds.transport import Request
 from suds.store import DocumentStore
 from logging import getLogger
-
+import sys
 
 log = getLogger(__name__)
 
@@ -67,7 +67,7 @@ class DocumentReader:
         @rtype: I{Document}
         """
         if url.startswith("/"):  # If it's a file.
-            print ":: Opening from file: " + url
+            sys.stderr.write(":: Opening from file: " + url + "\n")
             f = open(url, "r")
             ret = self.readFile(f)
             f.close()

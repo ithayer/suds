@@ -119,6 +119,14 @@ class Client(object):
             self.sd.append(sd)
         self.messages = dict(tx=None, rx=None)
 
+    def getPrefix(self, typeName):
+        for sd in self.sd:
+            try:
+                return sd.getprefix(typeName)
+            except:
+                pass
+        return None
+                
     def set_connection_info(self, scheme, host, port):
         self.scheme = scheme
         self.host = host
@@ -706,7 +714,7 @@ class SoapClient:
             parsed[1] = self.client.host + ":" + self.client.port
         except:
             pass
-        print ":: Using: " + urlparse.urlunparse(parsed)
+        sys.stderr.write(":: Using: " + urlparse.urlunparse(parsed) + "\n")
         return p.get('location', urlparse.urlunparse(parsed))
     
     def last_sent(self, d=None):

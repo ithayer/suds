@@ -22,6 +22,7 @@ import urllib2 as u2
 import httplib
 import base64
 import socket
+import sys
 from suds.transport import *
 from suds.properties import Unskin
 from urlparse import urlparse
@@ -204,7 +205,7 @@ class HTTPSClientAuthHandler(u2.HTTPSHandler):
         # will behave as a constructor
         return self.do_open(self.getConnection, req)
     def getConnection(self, host, timeout=None):
-        print "Getting connection to : " + host;
+        sys.stderr.write(":: Getting connection to : " + host + "\n")
         return httplib.HTTPSConnection(host, timeout=30);
 
 from options import Options
@@ -212,6 +213,6 @@ from options import Options
 #SUDS Client Auth solution
 class HttpClientAuthTransport(HttpTransport):
     def __init__(self, key, cert, options = Options()):
-        print "About to init";
+        sys.stderr.write(":: About to init")
         HttpTransport.__init__(self) # ??
         self.urlopener = u2.build_opener(HTTPSClientAuthHandler(key, cert))

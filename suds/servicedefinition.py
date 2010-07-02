@@ -188,10 +188,22 @@ class ServiceDefinition:
         if type.unbounded():
             name += '[]'
         ns = resolved.namespace()
+
         if ns[1] == self.wsdl.tns[1]:
             return name
         prefix = self.getprefix(ns[1])
         return ':'.join((prefix, name))
+
+    def simpleResolveType(self, name):
+        ret = None
+        for t in self.types:
+            if t[0].name == name:
+                if ret is not None:
+                    raise "Duplicate name: " + name
+                ret = self.xlate(type)
+        if ret is None:
+            raise "Name not found: " + name
+        return ret
         
     def description(self):
         """

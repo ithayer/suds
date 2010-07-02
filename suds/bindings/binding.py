@@ -20,6 +20,7 @@ Provides classes for (WS) SOAP bindings.
 
 from logging import getLogger
 from suds import *
+from suds.sax import splitPrefix
 from suds.sax import Namespace
 from suds.sax.parser import Parser
 from suds.sax.element import Element
@@ -33,6 +34,7 @@ from suds.xsd.query import TypeQuery, ElementQuery
 from suds.xsd.sxbasic import Element as SchemaElement
 from suds.options import Options
 from copy import deepcopy 
+import sys
 
 log = getLogger(__name__)
 
@@ -147,18 +149,26 @@ class Binding:
         soapbody = self.multiref.process(soapbody)
         nodes = self.replycontent(method, soapbody)
         rtypes = self.returned_types(method)
+
         if len(rtypes) > 1:
             result = self.replycomposite(rtypes, nodes)
+
             return (replyroot, result)
         if len(rtypes) == 1:
             if rtypes[0].unbounded():
                 result = self.replylist(rtypes[0], nodes)
+
                 return (replyroot, result)
             if len(nodes):
                 unmarshaller = self.unmarshaller()
                 resolved = rtypes[0].resolve(nobuiltin=True)
+                ns = nodes[0].resolvePrefix(splitPrefix(nodes[0].get("type"))[0])[1];
+                
                 result = unmarshaller.process(nodes[0], resolved)
+                result.__ns = ns
+
                 return (replyroot, result)
+        
         return (replyroot, None)
     
     def replylist(self, rt, nodes):

@@ -24,11 +24,11 @@ from suds.umx import *
 from suds.umx.attrlist import AttrList
 from suds.sax.text import Text
 from suds.sudsobject import Factory, merge
-
+import sys
 
 log = getLogger(__name__)
 
-reserved = { 'class':'cls', 'def':'dfn', }
+reserved = { 'class':'cls', 'def':'dfn', '__ns':'__ns' }
 
 class Core:
     """
@@ -88,6 +88,9 @@ class Core:
                 p = Factory.property(node.name, node.getText())
                 return merge(content.data, p)
         if len(content.data):
+            # Not sure why it returns ns
+            if content.type.type is not None:
+                content.data.__ns = content.type.type[1]
             return content.data
         lang = attributes.lang()
         if content.node.isnil():

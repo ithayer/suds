@@ -24,6 +24,7 @@ from suds.umx import *
 from suds.umx.core import Core
 from suds.resolver import NodeResolver, Frame
 from suds.sudsobject import Factory
+import sys
 
 log = getLogger(__name__)
 
@@ -89,6 +90,7 @@ class Typed(Core):
         if cls_name is None:
             cls_name = content.node.name
         content.data = Factory.object(cls_name)
+        
         md = content.data.__metadata__
         md.sxtype = real
         
