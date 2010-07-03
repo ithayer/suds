@@ -89,8 +89,8 @@ class Core:
                 return merge(content.data, p)
         if len(content.data):
             # Not sure why it returns ns
-            if content.type.type is not None:
-                content.data.__ns = content.type.type[1]
+#            if content.type.type is not None:
+#                content.data.__ns = content.type.type[1]
             return content.data
         lang = attributes.lang()
         if content.node.isnil():

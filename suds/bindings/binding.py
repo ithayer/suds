@@ -165,7 +165,7 @@ class Binding:
                 ns = nodes[0].resolvePrefix(splitPrefix(nodes[0].get("type"))[0])[1];
                 
                 result = unmarshaller.process(nodes[0], resolved)
-                result.__ns = ns
+#                result.__ns = ns
 
                 return (replyroot, result)
         
